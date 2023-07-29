@@ -1,0 +1,27 @@
+[project]
+name = "chess_embeddings"
+description = "Chess position embeddings for similarity search"
+authors = [
+    { name = "Peter Lombaers", email = "p.lombaers@gmail.com" }
+]
+readme = "README.md"
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11"
+]
+license = {text = "MIT"}
+dependencies = ["chess", "torch"]
+dynamic = ["version"]
+requires-python = ">=3.10"
+
+[build-system]
+build-backend = 'setuptools.build_meta'
+requires = ["setuptools>=58", "setuptools_scm[toml]>=7.1"]
+
+[tool.setuptools]
+packages = ["chess_embeddings"]
+
+[tool.setuptools_scm]
+write_to = "chess_embeddings/_version.py"
