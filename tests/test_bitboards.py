@@ -6,7 +6,9 @@ from chess_embeddings import (
     BB_ROOK_MOVES,
     BB_QUEEN_MOVES,
     BB_KING_MOVES,
+    board_to_tensor,
 )
+import chess
 
 
 def test_black_pawn_moves():
@@ -104,3 +106,67 @@ def test_queen_moves():
 def test_king_moves():
     assert set(BB_KING_MOVES[3].indices) == {2, 10, 11, 12, 4}
     assert set(BB_KING_MOVES[30].indices) == {21, 22, 23, 31, 39, 38, 37, 29}
+
+
+def test_board_to_tensor():
+    board = chess.Board()
+    assert board_to_tensor(board).tolist() == (
+        # WHITE PAWNS
+        [0 for _ in range(8)]
+        + [1 for _ in range(8, 16)]
+        + [0 for _ in range(16, 64)]
+        # WHITE KNIGHTS
+        + [0]
+        + [1]
+        + [0 for _ in range(2, 6)]
+        + [1]
+        + [0 for _ in range(7, 64)]
+        # WHITE BISHOPS
+        + [0 for _ in range(2)]
+        + [1]
+        + [0 for _ in range(3, 5)]
+        + [1]
+        + [0 for _ in range(6, 64)]
+        # WHITE ROOKS
+        + [1]
+        + [0 for _ in range(1, 7)]
+        + [1]
+        + [0 for _ in range(8, 64)]
+        # WHITE QUEEN
+        + [0 for _ in range(3)]
+        + [1]
+        + [0 for _ in range(4, 64)]
+        # WHITE KING
+        + [0 for _ in range(4)]
+        + [1]
+        + [0 for _ in range(5, 64)]
+        # BLACK PAWNS
+        + [0 for _ in range(48)]
+        + [1 for _ in range(48, 56)]
+        + [0 for _ in range(56, 64)]
+        # BLACK KNIGHTS
+        + [0 for _ in range(57)]
+        + [1]
+        + [0 for _ in range(58, 62)]
+        + [1]
+        + [0]
+        # BLACK BISHOPS
+        + [0 for _ in range(58)]
+        + [1]
+        + [0 for _ in range(59, 61)]
+        + [1]
+        + [0 for _ in range(62, 64)]
+        # BLACK ROOKS
+        + [0 for _ in range(56)]
+        + [1]
+        + [0 for _ in range(57, 63)]
+        + [1]
+        # BLACK QUEEN
+        + [0 for _ in range(59)]
+        + [1]
+        + [0 for _ in range(60, 64)]
+        # BLACK KING
+        + [0 for _ in range(60)]
+        + [1]
+        + [0 for _ in range(61, 64)]
+    )

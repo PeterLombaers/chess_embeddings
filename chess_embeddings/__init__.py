@@ -1,5 +1,4 @@
-from textwrap import wrap
-
+import chess
 from chess import (
     BB_KNIGHT_ATTACKS,
     BB_KING_ATTACKS,
@@ -8,12 +7,14 @@ from chess import (
     BB_RANK_ATTACKS,
     BB_FILE_ATTACKS,
 )
+import torch
 
 
 class BitBoard(int):
     def __str__(self) -> str:
         return "\n".join(
-            [" ".join(wrap(line[::-1], 1)) for line in wrap("{:064b}".format(self), 8)]
+            " ".join(map(str, self.binary_digits[i * 8 : (i + 1) * 8]))
+            for i in range(7, -1, -1)
         )
 
     def __repr__(self) -> str:
@@ -24,11 +25,23 @@ class BitBoard(int):
 
     @property
     def indices(self) -> list[int]:
-        return [
-            index
-            for index, char in enumerate("{:064b}".format(self)[::-1])
-            if char == "1"
-        ]
+        return [index for index, digit in enumerate(self.binary_digits) if digit == 1]
+
+    @property
+    def binary_digits(self) -> list[int]:
+        return [int(digit) for digit in "{:064b}".format(self)[::-1]]
+
+    @property
+    def tensor(self) -> torch.Tensor:
+        return torch.Tensor(self.binary_digits).to(torch.int8)
+
+
+def board_to_tensor(board: chess.Board) -> torch.Tensor:
+    # [PAWN, KNIGHT, BISHOP, ROOK, QUEEN, KING] = [1, 2, 3, 4, 5, 6]
+    bitboards = [BitBoard(board.pieces_mask(i, True)) for i in range(1, 7)] + [
+        BitBoard(board.pieces_mask(i, False)) for i in range(1, 7)
+    ]
+    return torch.cat([bb.tensor for bb in bitboards], dim=0)
 
 
 _BB_BLACK_PAWN_ATTACKS = [
